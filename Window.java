@@ -13,7 +13,6 @@ import javax.swing.JPanel;
 public class Window extends JFrame implements KeyListener, MouseListener {
 
     private int Position_X,Position_Y;
-    public static String wyborUsera;
     public static int indeks;
 
     public Window() {
