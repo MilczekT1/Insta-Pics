@@ -40,10 +40,11 @@ public class Buttons extends JPanel implements ActionListener {
         if(source == loadURLButton) {
             FileReader file;
             BufferedReader reader = null;
+            fileAmount = 0;
             //*
             try {
                 if (System.getProperty("os.name").equals("Mac OS X")){
-                    file = new FileReader("/Users/<username>/Desktop/insta.txt");
+                    file = new FileReader("/Users/Konrad/Desktop/insta.txt");
                     reader = new BufferedReader(file);
                 } else {//TODO: different os
                     file = new FileReader("/Users/<username>/Desktop/insta.txt");
@@ -58,13 +59,12 @@ public class Buttons extends JPanel implements ActionListener {
 
             while (ableToExecute) {
                 this.webPageUrl = readNextLine(reader);
-                this.fileAmount++;
+                fileAmount++;
 
                 String stringHTML = getPage_HTML(webPageUrl);
                 String imageURL = extractImageURL_Instagram(stringHTML);
                 saveImagefromURL(imageURL);
             }
-            this.fileAmount = 0;
         }
     }
 
@@ -76,8 +76,8 @@ public class Buttons extends JPanel implements ActionListener {
             result = (String) clipboard.getData(DataFlavor.stringFlavor);
         } catch (UnsupportedFlavorException e1) {
             e1.printStackTrace();
-        } catch (IOException e1) {
-            e1.printStackTrace();
+        } catch (IOException e2) {
+            e2.printStackTrace();
         }
         return result;
     }
@@ -88,10 +88,13 @@ public class Buttons extends JPanel implements ActionListener {
             text.trim();
             return text;
         }
-        catch(IOException exception){
+        catch(IllegalArgumentException exception1){
+            System.out.println("bad url");
+            return null;
+        }
+        catch(IOException exception2){
             System.out.println("Connection error");
-            //ableToExecute = false;
-            return "badlink";
+            return null;
         }
     }
     private String extractImageURL_Instagram(String stringHTML){
@@ -107,13 +110,12 @@ public class Buttons extends JPanel implements ActionListener {
     }
     private String readNextLine(BufferedReader localReader) {
         try {
-            String url = localReader.readLine();
-            return url;
+            return localReader.readLine();
         }
         catch(IOException nextLineNotRead){
             System.out.println("Reading next line error");
             boolean ableToExecute = false;
-            return "155034";
+            return null;
         }
     }
     private void saveImagefromURL(String imageURL){
@@ -121,7 +123,6 @@ public class Buttons extends JPanel implements ActionListener {
             Files.copy(in, Paths.get("/Users/Konrad/Desktop/" + fileAmount + ".jpg"));
         } catch (Exception savingImageError) {
             System.out.println("File saving error");
-            //this.ableToExecute = false;
         }
     }
 }
