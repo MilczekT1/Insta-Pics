@@ -1,3 +1,5 @@
+//Copyright (C) 2016  Konrad Boniecki
+//License information in file Main
 package Sources;
 
 import java.awt.*;
@@ -18,7 +20,7 @@ public class Window extends JFrame implements KeyListener, MouseListener {
     public Window() {
         addMouseListener(this);
 
-        setTitle("Download Instagram Pics");
+        setTitle("Instagram Pics");
         setSize(600,600);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 

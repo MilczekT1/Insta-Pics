@@ -1,3 +1,5 @@
+//Copyright (C) 2016  Konrad Boniecki
+//License information in file "Main"
 package Sources;
 
 import org.jsoup.Jsoup;
