@@ -12,26 +12,29 @@ import java.awt.EventQueue;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 
-public class Window extends JFrame implements KeyListener, MouseListener {
+public class MainWindow extends JFrame implements KeyListener, MouseListener {
 
     private int Position_X,Position_Y;
-    public static int indeks;
+    private JPanel buttonPanel;
+    private static final int DEFAULT_WIDTH = 300;
+    private static final int DEFAULT_HEIGHT = 300;
 
-    public Window() {
-        addMouseListener(this);
+    public MainWindow() {
+        setFrameProperties();
 
-        setTitle("Instagram Pics");
-        setSize(600,600);
-        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-
-        JPanel buttonPanel = new Buttons();
-        add(buttonPanel);
+        buttonPanel = new Buttons();
 
         setLayout(new FlowLayout(FlowLayout.LEFT));
-        pack();//dopasowuje rozmiar do paneli
+        add(buttonPanel);
+        pack();
         setVisible(true);
-        buttonPanel.hasFocus();
         buttonPanel.grabFocus();
+    }
+
+    private void setFrameProperties() {
+        setTitle("Instagram Pics");
+        setSize(DEFAULT_WIDTH, DEFAULT_HEIGHT);
+        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
     }
 
     @Override
@@ -61,4 +64,5 @@ public class Window extends JFrame implements KeyListener, MouseListener {
     public void mousePressed(MouseEvent e) {
         //System.out.println("mousePressed");
     }
+
 }
