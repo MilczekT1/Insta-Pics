@@ -2,7 +2,6 @@
 //License information in file "Main"
 package Sources;
 
-import javafx.stage.DirectoryChooser;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 
@@ -17,20 +16,17 @@ import java.io.*;
 import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.util.Date;
 import java.util.Scanner;
 
-/* TODO:
-    let user  create and find and save files on-the-go
-*/
 public class Buttons extends JPanel implements ActionListener {
 
     private JButton loadFromSafariButton;
     private JButton loadFromFileButton;
 
     private static JFileChooser chooser;
-
     private String webPageUrl;
-    private static int fileAmount = 0;
+    private String pathToLocation;
     private static boolean ableToExecute;
 
     public Buttons() {
@@ -39,10 +35,10 @@ public class Buttons extends JPanel implements ActionListener {
     }
 
     void createButtons(){
-        loadFromFileButton = new JButton("Run");
+        loadFromFileButton = new JButton("Load from file *.txt");
         loadFromFileButton.addActionListener(this);
 
-        if (System.getProperty("os.name").equals("Mac OS X")){
+        if (isApplePC()){
             loadFromSafariButton = new JButton("Load from Safari tabs");
             loadFromSafariButton.addActionListener(this);
         }
@@ -51,7 +47,7 @@ public class Buttons extends JPanel implements ActionListener {
     void addButtonsToPanel(){
         setLayout(new FlowLayout());
         add(loadFromFileButton);
-        if (System.getProperty("os.name").equals("Mac OS X")) {
+        if (isApplePC()) {
             add(loadFromSafariButton);
         }
     }
@@ -59,33 +55,26 @@ public class Buttons extends JPanel implements ActionListener {
     @Override
     public void actionPerformed(ActionEvent e) {
         Object source = e.getSource();
-        fileAmount = 0;
         ableToExecute = true;
+        chooser = new JFileChooser();
 
         if(source == loadFromFileButton) {
-            FileReader file;
             BufferedReader reader = null;
-            chooser = new JFileChooser();
+            chooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
             int result = chooser.showOpenDialog(null);
 
             if (result == JFileChooser.APPROVE_OPTION) {
-                String pathToSelectedFile = chooser.getSelectedFile().getPath();
-                try {
-                    file = new FileReader(pathToSelectedFile);
-                    reader = new BufferedReader(file);
-                } catch (Exception loadingFileError) {
-                    System.out.println("File loading error");
-                    ableToExecute = false;
-                }
+                reader = getURLSFromSelectedFile();
+                pathToLocation = setSaveDirectory();
+                parseAndSaveImagesFrom(reader);
             }
-            parseAndSaveImagesFrom(reader, ableToExecute);
         }
         else if (source == loadFromSafariButton){
             Scanner urls  = new Scanner(getURLSFromSafari());
-            parseAndSaveImagesFromSafari(urls, ableToExecute);
+            pathToLocation = setSaveDirectory();
+            parseAndSaveImagesFromSafari(urls);
         }
     }
-
 
     private boolean isApplePC(){
         if (System.getProperty("os.name").equals("Mac OS X")){
@@ -99,11 +88,35 @@ public class Buttons extends JPanel implements ActionListener {
         }
     }
 
+    private String setSaveDirectory(){
+        chooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
+        int result = chooser.showSaveDialog(null);
+        if (result == JFileChooser.APPROVE_OPTION) {
+            return chooser.getCurrentDirectory().toString();
+        }
+        else if (result == JFileChooser.CANCEL_OPTION){
+            ableToExecute = false;
+        }
+        return null;
+    }
+
     private String getURLSFromSafari(){
         String script = copyToClipboardURL_AppleScript();
         runAppleScript(script);
         String copied = copyFromClipboard();
         return copied;
+    }
+    private BufferedReader getURLSFromSelectedFile(){
+        String pathToSelectedFile = chooser.getSelectedFile().getPath();
+        try {
+            FileReader file = new FileReader(pathToSelectedFile);
+            BufferedReader localReader = new BufferedReader(file);
+            return localReader;
+        } catch (Exception loadingFileError) {
+            System.out.println("File loading error");
+            ableToExecute = false;
+        }
+        return null;
     }
     private void runAppleScript(String script) {
         Runtime runtime = Runtime.getRuntime();
@@ -139,20 +152,18 @@ public class Buttons extends JPanel implements ActionListener {
         return result;
     }
 
-    private void parseAndSaveImagesFrom(BufferedReader localReader, boolean localAbletoexecute){
+    private void parseAndSaveImagesFrom(BufferedReader localReader){
             while (ableToExecute) {
                 this.webPageUrl = readNextLine(localReader);
-                fileAmount++;
 
                 String stringHTML = getPage_HTML(webPageUrl);
                 String imageURL = extractImageURL_Instagram(stringHTML);
                 saveImageFromURL(imageURL);
             }
         }
-    private void parseAndSaveImagesFromSafari(Scanner localScanner, boolean localAbletoexecute){
+    private void parseAndSaveImagesFromSafari(Scanner localScanner){
         while (ableToExecute) {
             this.webPageUrl = readNextLine(localScanner);
-            fileAmount++;
 
             String stringHTML = getPage_HTML(webPageUrl);
             String imageURL = extractImageURL_Instagram(stringHTML);
@@ -162,7 +173,7 @@ public class Buttons extends JPanel implements ActionListener {
 
     private String getPage_HTML(String webPageURL){
         try {
-            Document inStringHTML = Jsoup.connect(webPageUrl).get();
+            Document inStringHTML = Jsoup.connect(webPageURL).get();
             String text = inStringHTML.toString();
             text = text.trim();
             return text;
@@ -213,11 +224,21 @@ public class Buttons extends JPanel implements ActionListener {
         }
     }
     private void saveImageFromURL(String imageURL){
+
         try (InputStream in = new URL(imageURL).openStream()) {
-            Files.copy(in, Paths.get("/Users/Konrad/Desktop/" + fileAmount + ".jpg"));
+            wait_Milliseconds(750);
+            Files.copy(in, Paths.get(pathToLocation + "/" + new Date().toString() + ".jpg"));
         } catch (Exception savingImageError) {
             System.out.println("File saving error");
             ableToExecute = false;
+        }
+    }
+
+    private void wait_Milliseconds(int milliseconds){
+        try {
+            Thread.sleep(milliseconds);
+        } catch(InterruptedException ex) {
+            Thread.currentThread().interrupt();
         }
     }
 }
