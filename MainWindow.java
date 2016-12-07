@@ -2,52 +2,76 @@
 //License information in file Main
 package Sources;
 
+
 import java.awt.*;
-import java.awt.event.KeyEvent;
-import java.awt.event.KeyListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
+import java.net.URL;
 
-import java.awt.EventQueue;
-import javax.swing.JFrame;
-import javax.swing.JPanel;
+import javax.swing.*;
 
-public class MainWindow extends JFrame implements KeyListener, MouseListener {
+public class MainWindow extends JFrame implements MouseListener {
 
-    private int Position_X,Position_Y;
+    private int Mouse_X,Mouse_Y;
     private JPanel buttonPanel;
-    private static final int DEFAULT_WIDTH = 300;
-    private static final int DEFAULT_HEIGHT = 300;
+    private JLabel label;
+    public static final int DEFAULT_WIDTH = 300;
+    public static final int DEFAULT_HEIGHT = 300;
+    public static int SCREEN_WIDTH;
+    public static int SCREEN_HEIGHT;
 
-    public MainWindow() {
+    static {
+        Dimension screenSize = Main.getScreenSize();
+        SCREEN_HEIGHT = screenSize.height;
+        SCREEN_WIDTH = screenSize.width;
+    }
+
+    public MainWindow(){
         setFrameProperties();
 
         buttonPanel = new Buttons();
 
-        setLayout(new FlowLayout(FlowLayout.LEFT));
+        JPanel description = new JPanel();
+        description.add(new JLabel("trololo"));
+
+        this.setLayout(new FlowLayout());
+        add(description);
         add(buttonPanel);
         pack();
         setVisible(true);
-        buttonPanel.grabFocus();
     }
 
     private void setFrameProperties() {
-        setTitle("Instagram Pics");
-        setSize(DEFAULT_WIDTH, DEFAULT_HEIGHT);
+        setTitle("Instagram Pics by Konrad Boniecki");
+        setSize(SCREEN_WIDTH/2, SCREEN_HEIGHT/2);
+        setLocation(SCREEN_WIDTH/4, SCREEN_HEIGHT/4);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+
+        /*  //this code display iconified logo from IDE, below works well in terminal.
+        URL url = Main.class.getResource("/logo.gif");
+        try {
+            Image img = new ImageIcon(url).getImage();
+            setIconImage(img);
+        }
+        catch(NullPointerException exc){
+            System.out.println("omg");
+        }
+        */
+
+        Image img = new ImageIcon("Resources/logo.gif").getImage();
+        setIconImage(img);
+    }
+
+    private void setIconifiedImage(String iconName){
+        Image img = new ImageIcon(iconName).getImage();
+        setIconImage(img);
     }
 
     @Override
     public void mouseClicked(MouseEvent e) {
-        Position_X = e.getX();
-        Position_Y = e.getY();
+        Mouse_X = e.getX();
+        Mouse_Y = e.getY();
     }
-    @Override
-    public void keyPressed(KeyEvent evt) {}
-    @Override
-    public void keyReleased(KeyEvent evt) {}
-    @Override
-    public void keyTyped(KeyEvent evt) {}
     @Override
     public void mouseEntered(MouseEvent e) {
         //System.out.println("mouseEntered");
@@ -64,5 +88,4 @@ public class MainWindow extends JFrame implements KeyListener, MouseListener {
     public void mousePressed(MouseEvent e) {
         //System.out.println("mousePressed");
     }
-
 }

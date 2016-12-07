@@ -18,6 +18,7 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.Date;
 import java.util.Scanner;
+import java.util.logging.Logger;
 
 public class Buttons extends JPanel implements ActionListener {
 
@@ -34,18 +35,21 @@ public class Buttons extends JPanel implements ActionListener {
         addButtonsToPanel();
     }
 
-    void createButtons(){
-        loadFromFileButton = new JButton("Load from file *.txt");
+    private void createButtons(){
+        Dimension buttonSize = new Dimension(MainWindow.SCREEN_WIDTH/5,MainWindow.SCREEN_HEIGHT/5);
+
+        loadFromFileButton = new JButton("Load from txt");
+        loadFromFileButton.setPreferredSize(buttonSize);
         loadFromFileButton.addActionListener(this);
 
         if (isApplePC()){
             loadFromSafariButton = new JButton("Load from Safari tabs");
+            loadFromSafariButton.setPreferredSize(buttonSize);
             loadFromSafariButton.addActionListener(this);
         }
     }
 
-    void addButtonsToPanel(){
-        setLayout(new FlowLayout());
+    private void addButtonsToPanel(){
         add(loadFromFileButton);
         if (isApplePC()) {
             add(loadFromSafariButton);
@@ -53,18 +57,17 @@ public class Buttons extends JPanel implements ActionListener {
     }
 
     @Override
-    public void actionPerformed(ActionEvent e) {
-        Object source = e.getSource();
+    public void actionPerformed(ActionEvent event) {
+        Object source = event.getSource();
         ableToExecute = true;
         chooser = new JFileChooser();
 
         if(source == loadFromFileButton) {
-            BufferedReader reader = null;
             chooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
             int result = chooser.showOpenDialog(null);
 
             if (result == JFileChooser.APPROVE_OPTION) {
-                reader = getURLSFromSelectedFile();
+                BufferedReader reader = getURLSFromSelectedFile();
                 pathToLocation = setSaveDirectory();
                 parseAndSaveImagesFrom(reader);
             }
@@ -101,10 +104,9 @@ public class Buttons extends JPanel implements ActionListener {
     }
 
     private String getURLSFromSafari(){
-        String script = copyToClipboardURL_AppleScript();
+        String script = AppleScript_copyToClipboardURL();
         runAppleScript(script);
-        String copied = copyFromClipboard();
-        return copied;
+        return copyFromClipboard();
     }
     private BufferedReader getURLSFromSelectedFile(){
         String pathToSelectedFile = chooser.getSelectedFile().getPath();
@@ -128,7 +130,7 @@ public class Buttons extends JPanel implements ActionListener {
             ableToExecute = false;
         }
     }
-    private String copyToClipboardURL_AppleScript(){
+    private String AppleScript_copyToClipboardURL(){
             String script = "tell application \"Safari\"\n" +
                     "\tset the_URLs to \"\"\n" +
                     "\trepeat with this_tab in tabs of window 1\n" +
@@ -141,7 +143,7 @@ public class Buttons extends JPanel implements ActionListener {
     private String copyFromClipboard(){
         Toolkit toolkit = Toolkit.getDefaultToolkit();
         Clipboard clipboard = toolkit.getSystemClipboard();
-        String result = null;
+        String result = "NotNull";
         try {
             result = (String) clipboard.getData(DataFlavor.stringFlavor);
         } catch (UnsupportedFlavorException e1) {
@@ -171,12 +173,29 @@ public class Buttons extends JPanel implements ActionListener {
         }
     }
 
+    private String readNextLine(BufferedReader localReader) {
+        try {
+            return localReader.readLine();
+        }
+        catch(IOException nextLineNotRead){
+            boolean ableToExecute = false;
+            return null;
+        }
+    }
+    private String readNextLine(Scanner localScanner){
+        try {
+            return localScanner.nextLine();
+        }
+        catch(Exception nextLineNotRead){
+            boolean ableToExecute = false;
+            return null;
+        }
+    }
     private String getPage_HTML(String webPageURL){
         try {
             Document inStringHTML = Jsoup.connect(webPageURL).get();
             String text = inStringHTML.toString();
-            text = text.trim();
-            return text;
+            return text.trim();
         }
         catch(IllegalArgumentException exception1){
             System.out.println("bad url");
@@ -189,44 +208,29 @@ public class Buttons extends JPanel implements ActionListener {
     }
     private String extractImageURL_Instagram(String stringHTML){
         try {
+            //extracting the link from html  og:image/LINK/og:description
+            //<meta property="og:image" content="LINK_TO_IMG"> \n <meta property="og:description"
+            //----------------^-------|---------|-----------|-------------------|^
+
             int indexStart = stringHTML.indexOf("og:image");
             int indexEnd = stringHTML.indexOf("og:description");
             String shortString = stringHTML.substring(indexStart, indexEnd);
-            //extracting the link from "dirty" string  og:image/LINK/og:description
             String[] stringArray = shortString.split("\"", 0);
+
             shortString = stringArray[2];
             return shortString;
 
             //TODO: if wrong url ex facebook, youtube etc... it may cause exception (shortstring)
         }
         catch (NullPointerException exception){
-            return null;
+            return "This url is really bad :(";
         }
     }
-    private String readNextLine(BufferedReader localReader) {
-        try {
-            return localReader.readLine();
-        }
-        catch(IOException nextLineNotRead){
-            System.out.println("Reading next line error");
-            boolean ableToExecute = false;
-            return null;
-        }
-    }
-    private String readNextLine(Scanner localScanner){
-        try {
-            return localScanner.nextLine();
-        }
-        catch(Exception nextLineNotRead){
-            System.out.println("Reading next line error");
-            boolean ableToExecute = false;
-            return null;
-        }
-    }
+
     private void saveImageFromURL(String imageURL){
 
         try (InputStream in = new URL(imageURL).openStream()) {
-            wait_Milliseconds(750);
+            waitMs(750);
             Files.copy(in, Paths.get(pathToLocation + "/" + new Date().toString() + ".jpg"));
         } catch (Exception savingImageError) {
             System.out.println("File saving error");
@@ -234,7 +238,7 @@ public class Buttons extends JPanel implements ActionListener {
         }
     }
 
-    private void wait_Milliseconds(int milliseconds){
+    private void waitMs(int milliseconds){
         try {
             Thread.sleep(milliseconds);
         } catch(InterruptedException ex) {

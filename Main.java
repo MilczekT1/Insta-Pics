@@ -19,6 +19,7 @@
 package Sources;
 
 import java.awt.*;
+
 public class Main {
 
     public static void main(String[] args){
@@ -28,5 +29,11 @@ public class Main {
                 MainWindow window = new MainWindow();
             }
         });
+    }
+
+    protected static Dimension getScreenSize(){
+        Toolkit kit = Toolkit.getDefaultToolkit();
+        Dimension screenSize = kit.getScreenSize();
+        return screenSize;
     }
 }

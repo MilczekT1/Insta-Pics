@@ -1,4 +1,4 @@
-    "Insta-Pics" downloads pictures from www.instagram.com
+    "InstaPics" downloads pictures from www.instagram.com
     Copyright (C) 2016  Konrad Boniecki
     Contact: Konrad_Boniecki@hotmail.com
 
