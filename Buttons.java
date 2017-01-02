@@ -1,6 +1,6 @@
 //Copyright (C) 2016  Konrad Boniecki
 //License information in file "Main"
-package Sources;
+package InstaPics;
 
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
@@ -18,7 +18,6 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.Date;
 import java.util.Scanner;
-import java.util.logging.Logger;
 
 public class Buttons extends JPanel implements ActionListener {
 

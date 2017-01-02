@@ -1,6 +1,6 @@
 //Copyright (C) 2016  Konrad Boniecki
 //License information in file Main
-package Sources;
+package InstaPics;
 
 
 import java.awt.*;
@@ -32,7 +32,7 @@ public class MainWindow extends JFrame implements MouseListener {
         buttonPanel = new Buttons();
 
         JPanel description = new JPanel();
-        description.add(new JLabel("trololo"));
+        description.add(new JLabel("description"));
 
         this.setLayout(new FlowLayout());
         add(description);
@@ -47,23 +47,12 @@ public class MainWindow extends JFrame implements MouseListener {
         setLocation(SCREEN_WIDTH/4, SCREEN_HEIGHT/4);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
-        /*  //this code display iconified logo from IDE, below works well in terminal.
-        URL url = Main.class.getResource("/logo.gif");
-        try {
-            Image img = new ImageIcon(url).getImage();
-            setIconImage(img);
-        }
-        catch(NullPointerException exc){
-            System.out.println("omg");
-        }
-        */
-
-        Image img = new ImageIcon("Resources/logo.gif").getImage();
-        setIconImage(img);
+        setMinimalizedIcon("Resources/logo.gif");
     }
 
-    private void setIconifiedImage(String iconName){
-        Image img = new ImageIcon(iconName).getImage();
+    private void setMinimalizedIcon(String path){
+        URL url = MainWindow.class.getResource(path);
+        Image img = new ImageIcon(url).getImage();
         setIconImage(img);
     }
 
