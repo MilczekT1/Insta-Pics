@@ -19,6 +19,10 @@
 package InstaPics;
 
 import java.awt.*;
+import java.awt.datatransfer.Clipboard;
+import java.awt.datatransfer.DataFlavor;
+import java.awt.datatransfer.UnsupportedFlavorException;
+import java.io.IOException;
 
 public class Main {
 
@@ -31,9 +35,31 @@ public class Main {
         });
     }
 
-    protected static Dimension getScreenSize(){
+    public static Dimension getScreenSize(){
         Toolkit kit = Toolkit.getDefaultToolkit();
         Dimension screenSize = kit.getScreenSize();
         return screenSize;
+    }
+    protected static void waitMs(int milliseconds){
+        //This method is only used due to the problem with naming 2 files with the same date-and-time in 1 sec
+        try {
+            Thread.sleep(milliseconds);
+        } catch(InterruptedException ex) {
+            Thread.currentThread().interrupt();
+        }
+    }
+
+    protected static String copyFromClipboard(){
+        Toolkit toolkit = Toolkit.getDefaultToolkit();
+        Clipboard clipboard = toolkit.getSystemClipboard();
+        String result = "This String should contain clipboard inside\n";
+        try {
+            result = (String) clipboard.getData(DataFlavor.stringFlavor);
+        } catch (UnsupportedFlavorException e1) {
+            e1.printStackTrace();
+        } catch (IOException e2) {
+            e2.printStackTrace();
+        }
+        return result;
     }
 }

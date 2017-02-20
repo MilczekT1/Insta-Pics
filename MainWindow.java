@@ -12,13 +12,12 @@ import javax.swing.*;
 
 public class MainWindow extends JFrame implements MouseListener {
 
-    private int Mouse_X,Mouse_Y;
     private JPanel buttonPanel;
-    private JLabel label;
+
     public static final int DEFAULT_WIDTH = 300;
     public static final int DEFAULT_HEIGHT = 300;
-    public static int SCREEN_WIDTH;
-    public static int SCREEN_HEIGHT;
+    public static final int SCREEN_WIDTH;
+    public static final int SCREEN_HEIGHT;
 
     static {
         Dimension screenSize = Main.getScreenSize();
@@ -29,20 +28,18 @@ public class MainWindow extends JFrame implements MouseListener {
     public MainWindow(){
         setFrameProperties();
 
+        JLabel buttonsDescription = new JLabel("Description",SwingConstants.CENTER);
         buttonPanel = new Buttons();
 
-        JPanel description = new JPanel();
-        description.add(new JLabel("description"));
-
-        this.setLayout(new FlowLayout());
-        add(description);
-        add(buttonPanel);
+        this.setLayout(new BorderLayout());
+        add(buttonsDescription, BorderLayout.NORTH);
+        add(buttonPanel, BorderLayout.CENTER);
         pack();
         setVisible(true);
     }
 
     private void setFrameProperties() {
-        setTitle("Instagram Pics by Konrad Boniecki");
+        setTitle("Instagram Pics Downloader by Konrad Boniecki");
         setSize(SCREEN_WIDTH/2, SCREEN_HEIGHT/2);
         setLocation(SCREEN_WIDTH/4, SCREEN_HEIGHT/4);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -58,8 +55,8 @@ public class MainWindow extends JFrame implements MouseListener {
 
     @Override
     public void mouseClicked(MouseEvent e) {
-        Mouse_X = e.getX();
-        Mouse_Y = e.getY();
+        //Mouse_X = e.getX();
+        //Mouse_Y = e.getY();
     }
     @Override
     public void mouseEntered(MouseEvent e) {
