@@ -24,7 +24,7 @@ import java.awt.datatransfer.DataFlavor;
 import java.awt.datatransfer.UnsupportedFlavorException;
 import java.io.IOException;
 
-public class Main {
+public final class Main {
 
     public static void main(String[] args){
         EventQueue.invokeLater(new Runnable() {
@@ -40,8 +40,10 @@ public class Main {
         Dimension screenSize = kit.getScreenSize();
         return screenSize;
     }
+
     protected static void waitMs(int milliseconds){
-        //This method is only used due to the problem with naming 2 files with the same date-and-time in 1 sec
+        // This method is only used due to the problem
+        // with naming 2 files with the same date-and-time during 1 sec
         try {
             Thread.sleep(milliseconds);
         } catch(InterruptedException ex) {

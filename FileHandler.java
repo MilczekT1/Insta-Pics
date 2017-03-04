@@ -1,3 +1,5 @@
+//Copyright (C) 2016  Konrad Boniecki
+//License information in file "Main"
 package InstaPics;
 
 import javax.swing.*;
@@ -6,13 +8,10 @@ import java.awt.event.ActionEvent;
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
+import java.util.Collection;
+import java.util.LinkedList;
 
-public class File_Handler extends AbstractAction {
-
-    private boolean ableToExecute;
-    private String webPageUrl;
-    private String pathToLocation;
-    private JFileChooser chooser;
+public class FileHandler extends Source_Handler {
 
     @Override
     public void actionPerformed(ActionEvent event){
@@ -25,8 +24,14 @@ public class File_Handler extends AbstractAction {
 
         if (result == JFileChooser.APPROVE_OPTION) {
             BufferedReader reader = getURLSFromSelectedFile();
-            pathToLocation = Buttons.setSaveDirectory(ableToExecute);
-            parseAndSaveImagesFrom(reader, pathToLocation);
+            pathToLocation = setSaveDirectory(ableToExecute);
+
+            LinkedList<String> links = new LinkedList<>(parseFileLinks(reader));
+            String extension;
+            for (String link: links) {
+                extension = link.endsWith(".mp4") ? ".mp4" : ".jpg";
+                saveImageFromURL(link, extension, pathToLocation, ableToExecute);
+            }
         }
         chooser.resetChoosableFileFilters();
     }
@@ -43,18 +48,22 @@ public class File_Handler extends AbstractAction {
         }
         return null;
     }
-    private void parseAndSaveImagesFrom(BufferedReader localReader, String pathToLocation){
+    private Collection<String> parseFileLinks(BufferedReader localReader){
+        LinkedList<String> links = new LinkedList<>();
+        String stringHTML;
+        String fileURL;
         while (ableToExecute) {
             webPageUrl = readNextLine(localReader);
-            if (webPageUrl != null) {
-                String stringHTML = Buttons.getPage_HTML(webPageUrl);
-                String imageURL = Buttons.extractImageURL_Instagram(stringHTML);
-                Buttons.saveImageFromURL(imageURL, "jpg", pathToLocation, ableToExecute);
+            if (!webPageUrl.equals("null")) {
+                stringHTML = getPage_HTML(webPageUrl);
+                fileURL = extractFileLink(stringHTML);
+                links.add(fileURL);
             }
             else{
                 ableToExecute=false;
             }
         }
+        return links;
     }
     private String readNextLine(BufferedReader localReader) {
         try {
@@ -62,7 +71,7 @@ public class File_Handler extends AbstractAction {
         }
         catch(IOException nextLineNotRead){
             ableToExecute = false;
-            return null;
+            return "null";
         }
     }
 }

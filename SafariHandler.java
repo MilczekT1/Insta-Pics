@@ -1,31 +1,42 @@
+//Copyright (C) 2016  Konrad Boniecki
+//License information in file "Main"
 package InstaPics;
+
+import com.sun.tools.javac.util.List;
 
 import javax.swing.*;
 import java.awt.event.ActionEvent;
 import java.io.IOException;
+import java.util.Collection;
+import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.Scanner;
 
-public class Safari_Handler extends AbstractAction {
-
-    private boolean ableToExecute;
-    private String webPageUrl;
-    private String pathToLocation;
-    private JFileChooser chooser;
+public class SafariHandler extends Source_Handler {
 
     @Override
     public void actionPerformed(ActionEvent event){
         ableToExecute = true;
         chooser = new JFileChooser();
+        pathToLocation = setSaveDirectory(ableToExecute);
 
         Scanner urls = new Scanner(getURLSFromSafari());
-        pathToLocation = Buttons.setSaveDirectory(ableToExecute);
-        parseAndSaveImagesFromSafari(urls);
 
+        LinkedList<String> links = new LinkedList<>(parseFileLinks(urls));
+
+        String extension;
+        for(String link: links){
+            extension = link.endsWith(".mp4") ? ".mp4" : ".jpg";
+            saveImageFromURL(link, extension, pathToLocation, ableToExecute);
+        }
+        urls.close();
     }
 
     private String getURLSFromSafari(){
         String copyToClipboardFromSafari = AppleScript_copyToClipboardURL();
         runAppleScript(copyToClipboardFromSafari);
+        // Program execution can be faster than copying links via Applescript
+        Main.waitMs(1000);
         return Main.copyFromClipboard();
     }
     private void runAppleScript(String script) {
@@ -49,28 +60,35 @@ public class Safari_Handler extends AbstractAction {
         return script;
     }
 
-    private void parseAndSaveImagesFromSafari(Scanner localScanner){
-        //TODO: detect extension (mp4)
+    private Collection<String> parseFileLinks(Scanner localScanner){
+        LinkedList<String> fileLinks = new LinkedList<>();
+        String stringHTML;
+        String fileURL;
         while (ableToExecute) {
             webPageUrl = readNextLine(localScanner);
-            if (webPageUrl !=null) {
-                String stringHTML = Buttons.getPage_HTML(webPageUrl);
-                String imageURL = Buttons.extractImageURL_Instagram(stringHTML);
-                Buttons.saveImageFromURL(imageURL, "jpg", pathToLocation, ableToExecute);
+            if (!webPageUrl.equals("null")) {
+                stringHTML = getPage_HTML(webPageUrl);
+                fileURL = extractFileLink(stringHTML);
+                fileLinks.add(fileURL);
             }
             else{
                 ableToExecute = false;
-                //System.out.println("End of saving image from safari");
             }
         }
+        return fileLinks;
     }
     private String readNextLine(Scanner localScanner){
         try {
-            return localScanner.nextLine();
+            if (localScanner.hasNextLine()) {
+                return localScanner.nextLine();
+            }
+            else{
+                return "null";
+            }
         }
         catch(Exception nextLineNotRead){
             ableToExecute = false;
-            return null;
+            return "null";
         }
     }
 }

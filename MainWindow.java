@@ -10,7 +10,7 @@ import java.net.URL;
 
 import javax.swing.*;
 
-public class MainWindow extends JFrame implements MouseListener {
+public final class MainWindow extends JFrame implements MouseListener {
 
     private JPanel buttonPanel;
 
@@ -28,7 +28,7 @@ public class MainWindow extends JFrame implements MouseListener {
     public MainWindow(){
         setFrameProperties();
 
-        JLabel buttonsDescription = new JLabel("Description",SwingConstants.CENTER);
+        JLabel buttonsDescription = new JLabel("Choose your link source.",SwingConstants.CENTER);
         buttonPanel = new Buttons();
 
         this.setLayout(new BorderLayout());
