@@ -12,7 +12,7 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.Scanner;
 
-public class SafariHandler extends Source_Handler {
+public class SafariHandler extends SourceHandler {
 
     @Override
     public void actionPerformed(ActionEvent event){
@@ -36,7 +36,7 @@ public class SafariHandler extends Source_Handler {
         String copyToClipboardFromSafari = AppleScript_copyToClipboardURL();
         runAppleScript(copyToClipboardFromSafari);
         // Program execution can be faster than copying links via Applescript
-        Main.waitMs(1000);
+        Main.waitMs(2000);
         return Main.copyFromClipboard();
     }
     private void runAppleScript(String script) {

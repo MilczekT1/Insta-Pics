@@ -13,14 +13,12 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.Date;
 
-public abstract class Source_Handler extends AbstractAction {
+public abstract class SourceHandler extends AbstractAction {
 
     protected boolean ableToExecute;
     protected String pathToLocation;
     protected String webPageUrl;
     protected JFileChooser chooser;
-
-public static String ext;
 
     protected String setSaveDirectory(boolean ableToExecute){
         JFileChooser chooser = new JFileChooser();

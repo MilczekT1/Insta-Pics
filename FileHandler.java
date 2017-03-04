@@ -11,7 +11,7 @@ import java.io.IOException;
 import java.util.Collection;
 import java.util.LinkedList;
 
-public class FileHandler extends Source_Handler {
+public class FileHandler extends SourceHandler {
 
     @Override
     public void actionPerformed(ActionEvent event){
