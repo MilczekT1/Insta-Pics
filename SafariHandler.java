@@ -2,13 +2,10 @@
 //License information in file "Main"
 package InstaPics;
 
-import com.sun.tools.javac.util.List;
-
 import javax.swing.*;
 import java.awt.event.ActionEvent;
 import java.io.IOException;
 import java.util.Collection;
-import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.Scanner;
 
